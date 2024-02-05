@@ -6,44 +6,52 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles/page.css" />
+    <link rel="stylesheet" href="/styles/tokens.css" />
+    <link rel="stylesheet" href="/styles/settings.css" />
+    <script type="module" src="./rules.ts"></script>
+    <script type="module" src="./drop-down.ts"></script>
+    <script type="module" src="./settings.ts"></script>
+    <script type="module" src="./mainGame.ts"></script>
+    <script>
+      function showRules() {
+        console.log("open rules");
+        document
+          .getElementById("rule-box")
+          .shadowRoot.firstChild.nextSibling.classList.remove("show");
+      }
+
+      function showSettings() {
+        console.log("open settings");
+        document
+          .getElementById("settings-box")
+          .shadowRoot.firstChild.nextSibling.classList.remove("show");
+      }
+    </script>
   </head>
   <body>
     <div class="center">
       <p class="title">PROJECTIVE SET</p>
     </div>
 
-    <div class="center_buttons">
-      <button class="button">
-        <a href="index_with_popup.html">SHOW RULES</a>
-      </button>
-      <button class="button">
+    <header class="center_buttons">
+      <button class="button" id="rules" onclick="showRules()">
         <svg class="icon">
-          <use href="/images/icons.svg#icon-train" />
+          <use href="/images/icons.svg#icon-rules" />
+        </svg>
+        SHOW RULES
+      </button>
+      <button class="button" onclick="showSettings()">
+        <svg class="icon">
+          <use href="/images/icons.svg#icon-settings" />
         </svg>
         SETTINGS
       </button>
-    </div>
+    </header>
 
-    <div class="cards_remaining">
-      <a>NUMBER CARDS REMAINING: 56</a>
-    </div>
+    <main-game></main-game>
 
-    <div class="grid-container">
-      <div class="grid-item"><img src="images/dots/6_dot_1.png" /></div>
-      <div class="grid-item"><img src="images/dots/6_dot_2.png" /></div>
-      <div class="grid-item"><img src="images/dots/6_dot_3.png" /></div>
-      <div class="grid-item"><img src="images/dots/6_dot_4.png" /></div>
-      <div class="grid-item"><img src="images/dots/6_dot_5.png" /></div>
-      <div class="grid-item"><img src="images/dots/6_dot_7.png" /></div>
-      <div class="grid-item"><img src="images/dots/6_dot_8.png" /></div>
-      <div class="grid-item"></div>
-    </div>
+    <rule-box id="rule-box"></rule-box>
 
-    <div class="play_buttons">
-      <button class="button">SHUFFLE</button>
-      <button class="button">HINT</button>
-      <button class="button">SOLUTION</button>
-      <button class="button">NEW GAME</button>
-    </div>
+    <settings-box id="settings-box"></settings-box>
   </body>
 </html>
