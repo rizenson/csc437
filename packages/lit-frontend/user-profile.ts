@@ -1,12 +1,32 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { Profile } from "./models/profile";
+import { Profile } from "../express-backend/src/models/profile";
 import { serverPath } from "./rest";
+import { SettingsBox } from "./settings";
 
 @customElement("user-profile")
 export class UserProfileElement extends LitElement {
   @property()
-  path: string = "";
+  path: string = `/profile/${this.getUserId()}`;
+
+  getUserId() {
+    return document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("userid="))
+      ?.split("=")[1];
+  }
+
+  darkMode() {
+    let settings = new SettingsBox();
+
+    let darkMode = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("darkMode="))
+      ?.split("=")[1];
+    console.log(darkMode);
+    settings.getDarkMode(darkMode && darkMode == "true" ? true : false);
+  }
+  abc = this.darkMode();
 
   @state()
   profile?: Profile;
@@ -15,26 +35,89 @@ export class UserProfileElement extends LitElement {
     const profile =
       this.profile ||
       ({
-        userid: "youruserid",
-        name: "Your Name",
-        city: "Hometown, USA",
-        airports: ["ABC", "XYZ"],
+        userid: "",
+        name: "",
       } as Profile);
 
     const { userid, name, password } = profile;
+    const firstName = name.split(" ")[0];
 
     return html`
       <section>
-        <h1>${name}</h1>
-        <dl>
-          <dt>Username</dt>
-          <dd>${userid}</dd>
-          <dt>Password</dt>
-          <dd>${password}</dd>
-        </dl>
+        <div class="title">Welcome ${firstName}!</div>
+        <table>
+          <tr>
+            <td>Username</td>
+            <td class="test">${userid}</td>
+          </tr>
+          <tr>
+            <td>Name</td>
+            <td class="test">${name}</td>
+          </tr>
+          <tr>
+            <td>Password</td>
+            <td class="test">${this.printablePassword(password)}</td>
+          </tr>
+        </table>
+        <div>
+          <button @click=${this.editProfile}>Edit Profile</button>
+        </div>
       </section>
     `;
   }
+  static styles = [
+    css`
+      table {
+        width: 65%;
+        text-align: center;
+        padding-left: 35%;
+        font-size: larger;
+        line-height: 45px;
+      }
+      td {
+        text-align: left;
+      }
+      .test {
+        text-align: right;
+      }
+      button {
+        border: 2px solid black;
+        text-align: center;
+        font-size: 16px;
+        cursor: pointer;
+        width: 200px;
+        height: 50px;
+        display: inline;
+        border-radius: 10px;
+        padding: 0;
+        font-family: "JetBrains Mono";
+      }
+      div {
+        text-align: center;
+      }
+      .title {
+        font-size: 40px;
+      }
+    `,
+  ];
+
+  editProfile() {
+    document.getElementsByTagName("user-profile")[0].style.display = "none";
+    document.getElementsByTagName("user-profile-edit")[0].style.display =
+      "grid";
+  }
+
+  printablePassword(s: String) {
+    if (s) {
+      let retString = "";
+      for (let j = 0; j < s.length; j++) {
+        retString += "*";
+      }
+      return retString;
+    }
+    return "";
+  }
+
   _fetchData(path: string) {
     fetch(serverPath(path))
       .then((response) => {
@@ -49,6 +132,7 @@ export class UserProfileElement extends LitElement {
   }
 
   connectedCallback() {
+    console.log(this.path);
     if (this.path) {
       this._fetchData(this.path);
     }
@@ -61,42 +145,56 @@ export class UserProfileElement extends LitElement {
     }
     super.attributeChangedCallback(name, oldValue, newValue);
   }
-
-  static styles = [css`...`];
 }
 
 @customElement("user-profile-edit")
 export class UserProfileEditElement extends UserProfileElement {
   render() {
     const profile = (this.profile || {}) as Profile;
-    const {
-      userid,
-      name,
-      password = []
-    } = profile;
+    const { userid, name, password = [] } = profile;
+    const firstName = name.split(" ")[0];
 
     console.log("Rendering form", this.profile);
 
     return html`
       <section>
+        <div class="title">Welcome ${firstName}!</div>
         <form @submit=${this._handleSubmit}>
-          <dl>
-            <dt>Username</dt>
-            <dd><input name="userid" .value=${userid} /></dd>
-            <dt>Password</dt>
-            <dd><input name="password" .value=${password} /></dd>
-          </dl>
+          <table>
+            <tr>
+              <td>Username</td>
+              <td class="test">${userid}</td>
+            </tr>
+            <tr>
+              <td>Name</td>
+              <td class="test"><input name="name" .value=${name} /></td>
+            </tr>
+            <tr>
+              <td>New Password</td>
+              <td class="test"><input name="password" /></td>
+            </tr>
+          </table>
           <button type="submit">Submit</button>
         </form>
+        <div class="cancel">
+          <button @click="${this.cancel}">Cancel</button>
+        </div>
       </section>
     `;
+  }
+
+  cancel() {
+    document.getElementsByTagName("user-profile")[0].style.display = "grid";
+    document.getElementsByTagName("user-profile-edit")[0].style.display =
+      "none";
   }
 
   static styles = [
     ...UserProfileElement.styles,
     css`
       form {
-        display: contents;
+        text-align: center;
+        display: block;
       }
       button {
         grid-column: value;
@@ -105,52 +203,55 @@ export class UserProfileEditElement extends UserProfileElement {
       input {
         font: inherit;
       }
-    `
+      .title {
+        font-size: 50px;
+      }
+      td {
+        input {
+          text-align: right;
+        }
+      }
+      .title {
+        font-size: 40px;
+      }
+      .cancel {
+        text-align: center;
+      }
+    `,
   ];
 
-  _handleAvatarSelected(ev: Event) {
-    const target = ev.target as HTMLInputElement;
-    const selectedFile = (target.files as FileList)[0];
-    const reader: Promise<string> = new Promise(
-      (resolve, reject) => {
-        const fr = new FileReader();
-        fr.onload = () => resolve(fr.result as string);
-        fr.onerror = (err) => reject(err);
-        fr.readAsDataURL(selectedFile);
-      }
-    );
-
-    reader.then((result: string) => {
-      this.profile = {
-        ...(this.profile as Profile),
-        avatar: result
-      };
-    });
-  }
-
   _handleSubmit(ev: Event) {
-    ev.preventDefault(); // prevent browser from submitting form data itself
+    ev.preventDefault();
 
-    const avatar = this.profile?.avatar;
     const target = ev.target as HTMLFormElement;
     const formdata = new FormData(target);
-    let entries = Array.from(formdata.entries())
-      .map(([k, v]) => (v === "" ? [k] : [k, v]))
+    let entries = Array.from(formdata.entries()).map(([k, v]) =>
+      v === "" ? [k] : [k, v]
+    );
 
     const json = Object.fromEntries(entries);
 
     console.log("Submitting Form", json);
 
     this._putData(json);
+
+    document.getElementsByTagName("user-profile")[0].style.display = "grid";
+    document.getElementsByTagName("user-profile-edit")[0].style.display =
+      "none";
+    window.location.href = "http://localhost:5173/profile.html";
   }
 
   _putData(json: Profile) {
-    fetch(serverPath("/profiles/rizenson"), {
+    const userid = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("userid="))
+      ?.split("=")[1];
+    fetch(serverPath(`/profiles/${userid}`), {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(json)
+      body: JSON.stringify(json),
     })
       .then((response) => {
         if (response.status === 200) {
@@ -164,8 +265,6 @@ export class UserProfileEditElement extends UserProfileElement {
           this.profile = json as Profile;
         }
       })
-      .catch((err) =>
-        console.log("Failed to POST form data", err)
-      );
+      .catch((err) => console.log("Failed to POST form data", err));
   }
 }

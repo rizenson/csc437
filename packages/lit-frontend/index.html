@@ -9,10 +9,10 @@
     <link rel="stylesheet" href="/styles/tokens.css" />
     <link rel="stylesheet" href="/styles/settings.css" />
     <script type="module" src="./rules.ts"></script>
-    <script type="module" src="./drop-down.ts"></script>
     <script type="module" src="./settings.ts"></script>
     <script type="module" src="./mainGame.ts"></script>
     <script type="module" src="./user-profile.ts"></script>
+    <script type="module" src="./log-in-button.ts"></script>
     <script>
       function showRules() {
         console.log("open rules");
@@ -26,6 +26,31 @@
         document
           .getElementById("settings-box")
           .shadowRoot.firstChild.nextSibling.classList.remove("show");
+
+        let darkMode = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("darkMode="))
+          ?.split("=")[1];
+        if (darkMode && darkMode == "true" ? true : false) {
+          document
+            .getElementById("settings-box")
+            .shadowRoot.getElementById("darkMode").checked = "true";
+        } else {
+          document
+            .getElementById("settings-box")
+            .shadowRoot.getElementById("darkMode").checked = null;
+        }
+
+        let imageStyle = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("imageStyle="))
+          ?.split("=")[1];
+
+        console.log(imageStyle);
+        document
+          .getElementById("settings-box")
+          .shadowRoot.getElementById("image-style").value =
+          imageStyle;
       }
     </script>
   </head>
@@ -33,11 +58,6 @@
     <div class="center">
       <p class="title">PROJECTIVE SET</p>
     </div>
-
-    <user-profile path="/profile/rizenson"></user-profile>
-    <user-profile-edit
-    path="/profile/rizenson"></user-profile-edit>
-
     <header class="center_buttons">
       <button class="button" id="rules" onclick="showRules()">
         <svg class="icon">
@@ -51,15 +71,7 @@
         </svg>
         SETTINGS
       </button>
-      <a href="/profile.html" style="text-decoration:none" >
-      <button class="button">
-        <svg class="icon">
-          <use href="/images/icons.svg#icon-profile" />
-        </svg>
-        LOG IN
-      </button>
-    </a>
-
+      <log-in-button></log-in-button>
     </header>
 
     <main-game></main-game>

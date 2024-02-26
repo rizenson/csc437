@@ -1,5 +1,6 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { SettingsBox } from "./settings";
 
 @customElement("main-game")
 export class MainGame extends LitElement {
@@ -80,41 +81,76 @@ export class MainGame extends LitElement {
 
     .image-button {
       border: 0px;
+      transform: scale(1);
+      display: table-row-group;
+    }
+
+    .winner {
+      text-align: center;
+      display: none;
     }
   `;
 
-  totalCards = 63;
-  deck = [...Array(63)].map((_, i) => i + 1);
+  numberOfSymbols = this.getNumberOfSymbols();
+  listOfNums = [...Array(this.numberOfSymbols + 1).keys()];
+  allZeros = this.getAllZeros();
+
+  getNumberOfSymbols() {
+    let num = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("numberOfSymbols="))
+      ?.split("=")[1];
+    return num ? Number(num) : 6;
+  }
+
+  setNumberOfSymbols(num) {
+    this.numberOfSymbols = num;
+  }
+
+  getAllZeros() {
+    let s = "";
+    while (s.length < 4) s = "0" + s;
+    return s;
+  }
+  totalCards = 2 ** this.numberOfSymbols - 1;
+  deck = [...Array(this.totalCards)].map((_, i) => i + 1);
   hintsGiven = 0;
 
-  cardsToShow = [
-    [this.getCard(), false],
-    [this.getCard(), false],
-    [this.getCard(), false],
-    [this.getCard(), false],
-    [this.getCard(), false],
-    [this.getCard(), false],
-    [this.getCard(), false],
-  ];
+  getCards() {
+    let cards: any = [];
+    for (let i = 0; i < this.numberOfSymbols + 1; i++) {
+      cards.push([this.getCard(), false]);
+    }
+    return cards;
+  }
+
+  cardsToShow = this.getCards();
 
   solution = this.findSolution();
 
   startGame() {
-    this.totalCards = 63;
-    this.deck = [...Array(63)].map((_, i) => i + 1);
+    this.totalCards = 2 ** this.numberOfSymbols - 1;
+    this.deck = [...Array(this.totalCards)].map((_, i) => i + 1);
     this.hintsGiven = 0;
-  
-    this.cardsToShow = [
-      [this.getCard(), false],
-      [this.getCard(), false],
-      [this.getCard(), false],
-      [this.getCard(), false],
-      [this.getCard(), false],
-      [this.getCard(), false],
-      [this.getCard(), false],
-    ];
-  
+
+    this.cardsToShow = this.getCards();
+
     this.solution = this.findSolution();
+    for (let i = 0; i < this.cardsToShow.length; i++) {
+      document.getElementsByTagName(
+        "main-game"
+      )[0].shadowRoot!.children[1].children[i].children[0]!.style.display =
+        "table-row-group";
+      document.getElementsByTagName(
+        "main-game"
+      )[0].shadowRoot!.children[1].children[i].children[0]!.style.borderColor =
+        "#555";
+    }
+
+    document.getElementsByTagName(
+      "main-game"
+    )[0].shadowRoot!.children[2].style.display = "none";
+
     this.requestUpdate();
   }
 
@@ -127,7 +163,11 @@ export class MainGame extends LitElement {
   }
 
   findSolution() {
-    let allPossibleCombos = this.getCombinations(this.cardsToShow, 4, 6);
+    let allPossibleCombos = this.getCombinations(
+      this.cardsToShow,
+      4,
+      this.numberOfSymbols + 1
+    );
     for (let i = 0; i < allPossibleCombos.length; i++) {
       if (
         !this.hasDupicate(allPossibleCombos[i]) &&
@@ -137,6 +177,47 @@ export class MainGame extends LitElement {
       }
     }
   }
+
+  darkMode() {
+    let darkMode = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("darkMode="))
+      ?.split("=")[1];
+    if (darkMode && darkMode == "true" ? true : false) {
+      document
+        .querySelector(":root")!
+        .style!.setProperty("--primary-color", "white");
+      document
+        .querySelector(":root")!
+        .style!.setProperty("--secondary-color", "black");
+      document
+        .querySelector(":root")!
+        .style!.setProperty("--background-box", "#3f3f3f");
+      document
+        .querySelector(":root")!
+        .style!.setProperty("--button-color", "#7b6999");
+      document
+        .querySelector(":root")!
+        .style!.setProperty("--other-button-color", "#ff6565");
+    } else {
+      document
+        .querySelector(":root")!
+        .style!.setProperty("--primary-color", "black");
+      document
+        .querySelector(":root")!
+        .style!.setProperty("--secondary-color", "white");
+      document
+        .querySelector(":root")!
+        .style!.setProperty("--background-box", "#d4d4d4");
+      document
+        .querySelector(":root")!
+        .style!.setProperty("--button-color", "#ceb0ff");
+      document
+        .querySelector(":root")!
+        .style!.setProperty("--other-button-color", "#ffb1b1");
+    }
+  }
+  abc = this.darkMode();
 
   checkValid(proposedSol) {
     let proposedSolList = proposedSol.split(" ");
@@ -169,7 +250,7 @@ export class MainGame extends LitElement {
   getCard() {
     let index = Math.floor(Math.random() * this.totalCards);
     let value = this.deck[index].toString(2);
-    value = value.padStart(6, "0");
+    value = value.padStart(this.numberOfSymbols, "0");
     this.totalCards -= 1;
     this.deck.splice(index, 1);
     return value;
@@ -201,34 +282,6 @@ export class MainGame extends LitElement {
     }
 
     this.requestUpdate();
-  }
-
-  select0() {
-    this.select(0);
-  }
-
-  select1() {
-    this.select(1);
-  }
-
-  select2() {
-    this.select(2);
-  }
-
-  select3() {
-    this.select(3);
-  }
-
-  select4() {
-    this.select(4);
-  }
-
-  select5() {
-    this.select(5);
-  }
-
-  select6() {
-    this.select(6);
   }
 
   select(index) {
@@ -300,8 +353,16 @@ export class MainGame extends LitElement {
     for (var i = indexesToDelete.length - 1; i >= 0; i--) {
       this.cardsToShow.splice(indexesToDelete[i], 1);
     }
-    while (this.cardsToShow.length != 7) {
-      this.cardsToShow.push([this.getCard(), false]);
+    if (this.numberOfSymbols + 1 - this.cardsToShow.length > this.totalCards) {
+      while (this.totalCards != 0) {
+        console.log(this.totalCards);
+        this.cardsToShow.push([this.getCard(), false]);
+      }
+    } else {
+      while (this.cardsToShow.length != this.numberOfSymbols + 1) {
+        console.log(this.totalCards);
+        this.cardsToShow.push([this.getCard(), false]);
+      }
     }
     for (let i = 0; i < this.cardsToShow.length; i++) {
       if (this.cardsToShow[i][1] == true) {
@@ -318,8 +379,23 @@ export class MainGame extends LitElement {
         ].children[0]!.style.borderColor = "#555";
       }
     }
-    this.solution = this.findSolution();
-    this.hintsGiven = 0;
+    if (this.cardsToShow.length < this.numberOfSymbols + 1) {
+      for (var i = this.cardsToShow.length; i < this.numberOfSymbols + 1; i++) {
+        document.getElementsByTagName(
+          "main-game"
+        )[0].shadowRoot!.children[1].children[i].children[0]!.style.display =
+          "none";
+      }
+    }
+
+    if (this.cardsToShow.length != 0) {
+      this.solution = this.findSolution();
+      this.hintsGiven = 0;
+    } else {
+      document.getElementsByTagName(
+        "main-game"
+      )[0].shadowRoot!.children[2].style.display = "block";
+    }
     this.requestUpdate();
   }
 
@@ -372,33 +448,43 @@ export class MainGame extends LitElement {
   }
 
   render() {
-    return html` <div class="cards_remaining">
+    let imageStyle = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("imageStyle="))
+      ?.split("=")[1];
+    
+    const renderButtons = (index: number) => {
+      return html`
+        <button
+          class="grid-item image-button"
+          @click=${() => this.select(index)}
+        >
+          <img
+            src="images/cards/${this.numberOfSymbols}_${imageStyle ? imageStyle : "dot"}_${this
+              .cardsToShow.length > index
+              ? this.cardsToShow[index][0]
+              : this.allZeros}.png"
+          />
+        </button>
+      `;
+    };
+    return html`<div class="cards_remaining">
         <a>NUMBER CARDS REMAINING: ${this.totalCards}</a>
       </div>
 
       <div class="grid-container">
-        <button class="grid-item image-button" @click=${this.select0}>
-          <img src="images/dots_binary/6_dot_${this.cardsToShow[0][0]}.png" />
-        </button>
-        <button class="grid-item image-button" @click=${this.select1}>
-          <img src="images/dots_binary/6_dot_${this.cardsToShow[1][0]}.png" />
-        </button>
-        <button class="grid-item image-button" @click=${this.select2}>
-          <img src="images/dots_binary/6_dot_${this.cardsToShow[2][0]}.png" />
-        </button>
-        <button class="grid-item image-button" @click=${this.select3}>
-          <img src="images/dots_binary/6_dot_${this.cardsToShow[3][0]}.png" />
-        </button>
-        <button class="grid-item image-button" @click=${this.select4}>
-          <img src="images/dots_binary/6_dot_${this.cardsToShow[4][0]}.png" />
-        </button>
-        <button class="grid-item image-button" @click=${this.select5}>
-          <img src="images/dots_binary/6_dot_${this.cardsToShow[5][0]}.png" />
-        </button>
-        <button class="grid-item image-button" @click=${this.select6}>
-          <img src="images/dots_binary/6_dot_${this.cardsToShow[6][0]}.png" />
-        </button>
+        ${this.listOfNums.map(renderButtons)}
         <div class="grid-item"></div>
+      </div>
+
+      <div class="winner">
+        <iframe
+          src="https://giphy.com/embed/2gtoSIzdrSMFO"
+          width="480"
+          height="360"
+          frameborder="0"
+          allowfullscreen
+        ></iframe>
       </div>
 
       <div class="play_buttons">

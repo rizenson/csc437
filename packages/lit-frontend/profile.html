@@ -7,25 +7,11 @@
     />
     <link rel="stylesheet" href="/styles/page.css" />
     <link rel="stylesheet" href="/styles/profile.css" />
+    <script type="module" src="./login-page.ts"></script>
+    <script type="module" src="./user-profile.ts"></script>
+    <script type="module" src="./user-statistics.ts"></script>
   </head>
-  <body>
-    <div class="center">
-      <p class="title">PROJECTIVE SET</p>
-    </div>
-    <div class="log-in-body">
-      <p class="title">Log In or Sign Up</p>
-      <form>
-        <label for="fname">Username:</label>
-        <input type="text" id="fname" name="fname" /><br />
-        <label for="lname">Password:</label>
-        <input type="text" id="lname" name="lname" /><br />
-        <a href="/profile2.html" style="text-decoration: none">
-          <button>Log In</button></a
-        >
-        <a href="/profile2.html" style="text-decoration: none">
-          <button>Sign Up</button></a
-        >
-      </form>
-    </div>
-  </body>
+  <user-profile></user-profile>
+  <user-profile-edit style="display: none"></user-profile-edit>
+  <user-statistics></user-statistics>
 </html>

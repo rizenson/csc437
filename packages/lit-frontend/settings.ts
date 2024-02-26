@@ -1,5 +1,6 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { MainGame } from "./mainGame";
 
 @customElement("settings-box")
 export class SettingsBox extends LitElement {
@@ -235,65 +236,192 @@ export class SettingsBox extends LitElement {
       grid-row-start: xy;
       grid-row-end: yz;
     }
+
+    .selectedB {
+      background-color: black;
+      color: white;
+    }
+
+    .selectedW {
+      background-color: white;
+      color: black;
+    }
+    select {
+      width: 250px;
+      height: 40px;
+      text-align: center;
+    }
   `;
+
+  refresh = false;
+  kindsOfCards = [4, 6, 8, 10];
+  imageStyles = ["dot", "skeleton", "butterfly", "ladybug"];
 
   show() {
     console.log("close rules");
+
+    let is = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("imageStyle="))
+      ?.split("=")[1];
+
+    let temp = "";
+
+    let styles = document
+      .getElementById("settings-box")!
+      .shadowRoot!.getElementById("image-style")!.children;
+    for (let j = 0; j < styles.length; j++) {
+      if (styles[j].selected) {
+        document.cookie = "imageStyle=" + styles[j].id;
+        temp = styles[j].id;
+      }
+    }
+
+    if (is && is != temp) {
+      this.refresh = true;
+    }
+
     document
       .getElementById("settings-box")!!
       .shadowRoot!!.firstChild!!.nextSibling!!.classList.add("show");
+    if (this.refresh) {
+      location.reload();
+    }
   }
 
-  darkMode = false
+  getDM() {
+    let dm = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("darkMode="))
+      ?.split("=")[1];
+    return dm ? dm : false;
+  }
+
+  darkMode = this.getDM();
+  t = this.setDarkMode(this.darkMode);
+
+  setDarkMode(mode) {
+    document.cookie = "darkMode=" + mode;
+    let abc = new MainGame().darkMode();
+  }
 
   toggleDarkMode() {
     console.log("toggle dark mode");
     this.darkMode = !this.darkMode;
-    if(this.darkMode == true) {
-      document.querySelector(':root')!.style!.setProperty('--primary-color', 'white');
-      document.querySelector(':root')!.style!.setProperty('--secondary-color', 'black');
-      document.querySelector(':root')!.style!.setProperty('--background-box', '#3f3f3f');
-      document.querySelector(':root')!.style!.setProperty('--button-color', '#7b6999');
-      document.querySelector(':root')!.style!.setProperty('--other-button-color', '#ff6565');
+    this.setDarkMode(this.darkMode);
+  }
+
+  hardMode = false;
+
+  toggleHardMode() {
+    console.log("toggle hard mode");
+    this.hardMode = !this.hardMode;
+    if (this.hardMode == true) {
+      let cards = document
+        .getElementsByTagName("main-game")[0]
+        .shadowRoot?.children[1].getElementsByClassName("image-button")!;
+      for (let j = 0; j < cards.length; j++) {
+        let rand = Math.floor(Math.random() * 3 + 1);
+        if (rand == 1) {
+          cards[j]!.style!.transform = "scaleX(-1)";
+        } else if (rand == 2) {
+          cards[j]!.style!.transform = "scaleY(-1)";
+        } else if (rand == 3) {
+          cards[j]!.style!.transform = "scale(-1)";
+        } else {
+          cards[j]!.style!.transform = "scale(1)";
+        }
+      }
     } else {
-      document.querySelector(':root')!.style!.setProperty('--primary-color', 'black');
-      document.querySelector(':root')!.style!.setProperty('--secondary-color', 'white');
-      document.querySelector(':root')!.style!.setProperty('--background-box', '#d4d4d4');
-      document.querySelector(':root')!.style!.setProperty('--button-color', '#ceb0ff');
-      document.querySelector(':root')!.style!.setProperty('--other-button-color', '#ffb1b1');
+      let cards = document
+        .getElementsByTagName("main-game")[0]
+        .shadowRoot?.children[1].getElementsByClassName("image-button");
+      for (var card in cards) {
+        cards[card]!.style!.transform = "scale(1)";
+      }
     }
   }
 
+  colors(num, event) {
+    let index = this.kindsOfCards.indexOf(num);
+    let options = event.shadowRoot.children[0]
+      .getElementsByClassName("num_colors")[0]
+      .getElementsByClassName("color_button");
+    console.log(options[index].classList);
+    if (options[index].classList.contains("selectedW")) {
+      for (let j = 0; j < options.length; j++) {
+        if (options[j].classList.contains("selectedB")) {
+          options[j].classList.remove("selectedB");
+          options[j].classList.add("selectedW");
+        }
+      }
+      options[index].classList.remove("selectedW");
+      options[index].classList.add("selectedB");
+    }
+
+    document.cookie = "numberOfSymbols=" + num;
+
+    this.refresh = true;
+  }
+
+  getNumberOfSymbols() {
+    let num = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("numberOfSymbols="))
+      ?.split("=")[1];
+    return num ? Number(num) : 6;
+  }
+
   render() {
+    let abc = this.getNumberOfSymbols();
+    const renderButtons = (index: number) => {
+      return html`
+        <button
+          class="color_button ${index == abc ? "selectedB" : "selectedW"}"
+          @click=${() => this.colors(index, this)}
+        >
+          ${index}
+        </button>
+      `;
+    };
+
+    const renderImageStyles = (index: string) => {
+      return html` <option id="${index}" value="${index}">
+        ${index.charAt(0).toUpperCase() + index.slice(1)}
+      </option>`;
+    };
+
     return html`<div class="rule_box show">
       <p class="welcome">SETTINGS</p>
       <table class="setting_table">
         <tr>
           <td class="setting_name">Number of Colors</td>
-          <td class="num_colors">
-            <button class="color_button">4</button>
-            <button class="color_button selected">6</button>
-            <button class="color_button">8</button>
-            <button class="color_button">10</button>
-          </td>
+          <td class="num_colors">${this.kindsOfCards.map(renderButtons)}</td>
         </tr>
         <tr>
           <td class="setting_name">Image Style</td>
           <td class="image-style">
-            <drop-down></drop-down>
+            <select id="image-style">
+              ${this.imageStyles.map(renderImageStyles)}
+            </select>
           </td>
         </tr>
         <tr>
           <td class="setting_name">Arrangement</td>
           <td class="arrangement">
-            <drop-down></drop-down>
+            <select id="cars" name="cars" class="">
+              <option>7</option>
+              <option>3, 4</option>
+              <option selected>4, 3</option>
+              <option>2, 3, 2</option>
+            </select>
           </td>
         </tr>
         <tr>
           <td class="setting_name">Hard Mode</td>
           <td class="hard_mode">
             <label class="switch">
-              <input type="checkbox" />
+              <input type="checkbox" @click=${this.toggleHardMode} />
               <span class="slider round"></span>
             </label>
           </td>
@@ -302,7 +430,11 @@ export class SettingsBox extends LitElement {
           <td class="setting_name">Dark Mode</td>
           <td class="dark_mode">
             <label class="switch">
-              <input type="checkbox" @click=${this.toggleDarkMode}/>
+              <input
+                id="darkMode"
+                type="checkbox"
+                @click=${this.toggleDarkMode}
+              />
               <span class="slider round"></span>
             </label>
           </td>
