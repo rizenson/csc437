@@ -13,7 +13,7 @@ export class LoginPage extends LitElement {
       .split("; ")
       .find((row) => row.startsWith("darkMode="))
       ?.split("=")[1];
-    settings.getDarkMode(darkMode && darkMode == "true" ? true : false);
+    settings.setDarkMode(darkMode && darkMode == "true" ? true : false);
   }
   _show = false;
   static styles = css`

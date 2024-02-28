@@ -183,6 +183,7 @@ export class MainGame extends LitElement {
       .split("; ")
       .find((row) => row.startsWith("darkMode="))
       ?.split("=")[1];
+    console.log("i am reading dark mode as " + darkMode)
     if (darkMode && darkMode == "true" ? true : false) {
       document
         .querySelector(":root")!

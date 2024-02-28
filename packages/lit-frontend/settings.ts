@@ -294,7 +294,7 @@ export class SettingsBox extends LitElement {
       .split("; ")
       .find((row) => row.startsWith("darkMode="))
       ?.split("=")[1];
-    return dm ? dm : false;
+    return dm && dm == "true" ? true : false;
   }
 
   darkMode = this.getDM();
@@ -307,7 +307,9 @@ export class SettingsBox extends LitElement {
 
   toggleDarkMode() {
     console.log("toggle dark mode");
+    console.log("dark mode is " + this.darkMode)
     this.darkMode = !this.darkMode;
+    console.log("setting dark mode to " + this.darkMode)
     this.setDarkMode(this.darkMode);
   }
 

@@ -24,7 +24,7 @@ export class UserProfileElement extends LitElement {
       .find((row) => row.startsWith("darkMode="))
       ?.split("=")[1];
     console.log(darkMode);
-    settings.getDarkMode(darkMode && darkMode == "true" ? true : false);
+    settings.setDarkMode(darkMode && darkMode == "true" ? true : false);
   }
   abc = this.darkMode();
 
