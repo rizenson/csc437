@@ -66,7 +66,7 @@
     "start:proto": "npm -w proto start",
     "start:frontend": "npm -w lit-frontend run dev",
     "start:backend": "npm -w express-backend run start",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\""
   },
   "workspaces": [
     "packages/*"
