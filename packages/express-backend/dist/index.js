@@ -38,8 +38,10 @@ try {
   dist = path.resolve(cwd, "..", frontend, "dist");
   indexHtml = path.resolve(dist, "index.html");
 }
+console.log("server is static from ", dist);
 const app = (0, import_express.default)();
 const port = process.env.PORT || 3e3;
+app.use(import_express.default.static(dist));
 app.use((0, import_cors.default)());
 app.use(import_express.default.json());
 (0, import_mongoConnect.connect)("ProSet");

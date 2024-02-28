@@ -19,8 +19,12 @@ try {
   dist = path.resolve(cwd, "..", frontend, "dist");
   indexHtml = path.resolve(dist, "index.html");
 }
+
+console.log("server is static from ", dist)
 const app = express();
 const port = process.env.PORT || 3000;
+
+app.use(express.static(dist))
 
 app.use(cors());
 app.use(express.json());
