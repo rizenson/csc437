@@ -120,9 +120,9 @@ export class RuleBox extends LitElement {
     <div class="valid_example">
       <table>
         <tr>
-          <td><img src="images/dots/6_dot_27.png" /></td>
-          <td><img src="images/dots/6_dot_31.png" /></td>
-          <td><img src="images/dots/6_dot_4.png" /></td>
+        <td><img src="images/cards/6_dot_011011.png" /></td>
+        <td><img src="images/cards/6_dot_011111.png" /></td>
+        <td><img src="images/cards/6_dot_000100.png" /></td>
         </tr>
       </table>
       <h4 class="valid_set">VALID SET</h4>
@@ -130,9 +130,9 @@ export class RuleBox extends LitElement {
     <div class="invalid_example">
       <table>
         <tr>
-          <td><img src="images/dots/6_dot_27.png" /></td>
-          <td><img src="images/dots/6_dot_31.png" /></td>
-          <td><img src="images/dots/6_dot_7.png" /></td>
+        <td><img src="images/cards/6_dot_011011.png" /></td>
+        <td><img src="images/cards/6_dot_011111.png" /></td>
+        <td><img src="images/cards/6_dot_000111.png" /></td>
         </tr>
       </table>
       <h4 class="valid_set">INVALID SET</h4>
