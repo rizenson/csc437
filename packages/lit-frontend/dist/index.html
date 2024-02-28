@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css?family=JetBrains Mono"
+      rel="stylesheet"
+    />
+    <script>
+      function showRules() {
+        console.log("open rules");
+        document
+          .getElementById("rule-box")
+          .shadowRoot.firstChild.nextSibling.classList.remove("show");
+      }
+
+      function showSettings() {
+        console.log("open settings");
+        document
+          .getElementById("settings-box")
+          .shadowRoot.firstChild.nextSibling.classList.remove("show");
+
+        let darkMode = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("darkMode="))
+          ?.split("=")[1];
+        if (darkMode && darkMode == "true" ? true : false) {
+          document
+            .getElementById("settings-box")
+            .shadowRoot.getElementById("darkMode").checked = "true";
+        } else {
+          document
+            .getElementById("settings-box")
+            .shadowRoot.getElementById("darkMode").checked = null;
+        }
+
+        let imageStyle = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("imageStyle="))
+          ?.split("=")[1];
+
+        console.log(imageStyle);
+        document
+          .getElementById("settings-box")
+          .shadowRoot.getElementById("image-style").value =
+          imageStyle;
+      }
+    </script>
+    <script type="module" crossorigin src="/assets/index-DDy08v3E.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CSD3nVao.css">
+  </head>
+  <body>
+    <div class="center">
+      <p class="title">PROJECTIVE SET</p>
+    </div>
+    <header class="center_buttons">
+      <button class="button" id="rules" onclick="showRules()">
+        <svg class="icon">
+          <use href="/assets/icons-DcKvFWBw.svg#icon-rules" />
+        </svg>
+        SHOW RULES
+      </button>
+      <button class="button" onclick="showSettings()">
+        <svg class="icon">
+          <use href="/assets/icons-DcKvFWBw.svg#icon-settings" />
+        </svg>
+        SETTINGS
+      </button>
+      <log-in-button></log-in-button>
+    </header>
+
+    <main-game></main-game>
+
+    <rule-box id="rule-box"></rule-box>
+
+    <settings-box id="settings-box"></settings-box>
+  </body>
+</html>

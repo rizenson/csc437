@@ -3,12 +3,28 @@ import cors from "cors";
 import { connect } from "./mongoConnect";
 import profiles from "./profiles";
 import { Profile } from "./models/profile";
+import { PathLike } from "node:fs";
+import * as path from "path";
 
+const frontend = "lit-frontend";
+let cwd = process.cwd();
+let dist: PathLike | undefined;
+let indexHtml: PathLike | undefined;
+
+try {
+  indexHtml = require.resolve(frontend);
+  dist = path.dirname(indexHtml.toString());
+} catch (error: any) {
+  console.log(`Could not resolve ${frontend}:`, error.code);
+  dist = path.resolve(cwd, "..", frontend, "dist");
+  indexHtml = path.resolve(dist, "index.html");
+}
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+
 connect("ProSet");
 
 app.get("/hello", (req: Request, res: Response) => {
