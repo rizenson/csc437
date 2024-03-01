@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.html",
-  "type": "module",
   "scripts": {
     "dev": "npx vite",
     "build": "npx tsc && npx vite build"

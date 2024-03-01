@@ -238,7 +238,7 @@ export class UserProfileEditElement extends UserProfileElement {
     (document.getElementsByTagName("user-profile")[0] as HTMLElement).style.display = "grid";
    ( document.getElementsByTagName("user-profile-edit")[0] as HTMLElement).style.display =
       "none";
-    window.location.href = "http://localhost:5173/profile.html";
+    window.location.href = "profile.html";
   }
 
   _putData(json: Profile) {
