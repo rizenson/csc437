@@ -123,7 +123,7 @@ export class LoginPage extends LitElement {
           console.log(json.password);
           if (json.password == data.get("password")) {
             document.cookie = "userid=" + data.get("userid");
-            window.location.href = "http://localhost:5173/profile.html";
+            window.location.href = "profile.html";
           } else {
             document
               .getElementsByTagName("login-page")[0]
@@ -172,7 +172,7 @@ export class LoginPage extends LitElement {
       })
       .catch((err) => console.log("Failed to POST form data", err));
     document.cookie = "userid=" + data.get("userid");
-    window.location.href = "http://localhost:5173/profile.html";
+    window.location.href = "profile.html";
   }
 
   render() {

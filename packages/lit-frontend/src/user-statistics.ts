@@ -76,12 +76,12 @@ export class UserStatistics extends LitElement {
   }
 
   returnHome() {
-    window.location.href = "http://localhost:5173";
+    window.location.href = "/";
   }
 
   logout() {
     document.cookie = "userid=''";
-    window.location.href = "http://localhost:5173";
+    window.location.href = "/";
   }
 
   static styles = [
