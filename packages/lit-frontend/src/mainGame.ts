@@ -88,6 +88,10 @@ export class MainGame extends LitElement {
       text-align: center;
       display: none;
     }
+
+    .disabled {
+      background-color: grey;
+    }
   `;
 
   numberOfSymbols = this.getNumberOfSymbols();
@@ -159,17 +163,19 @@ export class MainGame extends LitElement {
   }
 
   findSolution() {
-    let allPossibleCombos = this.getCombinations(
-      this.cardsToShow,
-      4,
-      this.numberOfSymbols + 1
-    );
-    for (let i = 0; i < allPossibleCombos.length; i++) {
-      if (
-        !this.hasDuplicate(allPossibleCombos[i]) &&
-        this.checkValid(allPossibleCombos[i])
-      ) {
-        return allPossibleCombos[i];
+    if (this.numberOfSymbols < 7) {
+      let allPossibleCombos = this.getCombinations(
+        this.cardsToShow,
+        4,
+        this.numberOfSymbols + 1
+      );
+      for (let i = 0; i < allPossibleCombos.length; i++) {
+        if (
+          !this.hasDuplicate(allPossibleCombos[i]) &&
+          this.checkValid(allPossibleCombos[i])
+        ) {
+          return allPossibleCombos[i];
+        }
       }
     }
   }
@@ -274,17 +280,15 @@ export class MainGame extends LitElement {
 
     for (let i = 0; i < this.cardsToShow.length; i++) {
       if (this.cardsToShow[i][1] == true) {
-        (document.getElementsByTagName(
-          "main-game"
-        )[0].shadowRoot!.children[1].children[
-          i
-        ].children[0] as HTMLInputElement).style.borderColor = "red";
+        (
+          document.getElementsByTagName("main-game")[0].shadowRoot!.children[1]
+            .children[i].children[0] as HTMLInputElement
+        ).style.borderColor = "red";
       } else {
-        (document.getElementsByTagName(
-          "main-game"
-        )[0].shadowRoot!.children[1].children[
-          i
-        ].children[0] as HTMLInputElement).style.borderColor = "#555";
+        (
+          document.getElementsByTagName("main-game")[0].shadowRoot!.children[1]
+            .children[i].children[0] as HTMLInputElement
+        ).style.borderColor = "#555";
       }
     }
 
@@ -292,22 +296,21 @@ export class MainGame extends LitElement {
   }
 
   select(index: number) {
-    let color =
-      (document.getElementsByTagName("main-game")[0].shadowRoot!.children[1]
-        .children[index].children[0] as HTMLInputElement).style.borderColor;
+    let color = (
+      document.getElementsByTagName("main-game")[0].shadowRoot!.children[1]
+        .children[index].children[0] as HTMLInputElement
+    ).style.borderColor;
     if (color == "red") {
-      (document.getElementsByTagName(
-        "main-game"
-      )[0].shadowRoot!.children[1].children[
-        index
-      ].children[0] as HTMLInputElement).style.borderColor = "#555";
+      (
+        document.getElementsByTagName("main-game")[0].shadowRoot!.children[1]
+          .children[index].children[0] as HTMLInputElement
+      ).style.borderColor = "#555";
       this.cardsToShow[index][1] = false;
     } else {
-      (document.getElementsByTagName(
-        "main-game"
-      )[0].shadowRoot!.children[1].children[
-        index
-      ].children[0] as HTMLInputElement).style.borderColor = "red";
+      (
+        document.getElementsByTagName("main-game")[0].shadowRoot!.children[1]
+          .children[index].children[0] as HTMLInputElement
+      ).style.borderColor = "red";
       this.cardsToShow[index][1] = true;
     }
     this.checkSolution();
@@ -373,35 +376,38 @@ export class MainGame extends LitElement {
     }
     for (let i = 0; i < this.cardsToShow.length; i++) {
       if (this.cardsToShow[i][1] == true) {
-        (document.getElementsByTagName(
-          "main-game"
-        )[0].shadowRoot!.children[1].children[
-          i
-        ].children[0] as HTMLInputElement).style.borderColor = "red";
+        (
+          document.getElementsByTagName("main-game")[0].shadowRoot!.children[1]
+            .children[i].children[0] as HTMLInputElement
+        ).style.borderColor = "red";
       } else {
-        (document.getElementsByTagName(
-          "main-game"
-        )[0].shadowRoot!.children[1].children[
-          i
-        ].children[0] as HTMLInputElement).style.borderColor = "#555";
+        (
+          document.getElementsByTagName("main-game")[0].shadowRoot!.children[1]
+            .children[i].children[0] as HTMLInputElement
+        ).style.borderColor = "#555";
       }
     }
     if (this.cardsToShow.length < this.numberOfSymbols + 1) {
-      for (var i: number = this.cardsToShow.length; i < this.numberOfSymbols + 1; i++) {
-        (document.getElementsByTagName(
-          "main-game"
-        )[0].shadowRoot!.children[1].children[i].children[0] as HTMLInputElement).style.display =
-          "none";
+      for (
+        var i: number = this.cardsToShow.length;
+        i < this.numberOfSymbols + 1;
+        i++
+      ) {
+        (
+          document.getElementsByTagName("main-game")[0].shadowRoot!.children[1]
+            .children[i].children[0] as HTMLInputElement
+        ).style.display = "none";
       }
     }
 
     if (this.cardsToShow.length != 0) {
-      this.solution = this.findSolution();
+      // this.solution = this.findSolution();
       this.hintsGiven = 0;
     } else {
-      (document.getElementsByTagName(
-        "main-game"
-      )[0].shadowRoot!.children[2] as HTMLInputElement).style.display = "block";
+      (
+        document.getElementsByTagName("main-game")[0].shadowRoot!
+          .children[2] as HTMLInputElement
+      ).style.display = "block";
     }
     this.requestUpdate();
   }
@@ -416,42 +422,49 @@ export class MainGame extends LitElement {
   }
 
   showSolution() {
-    let solutionList: any = this.solution ? (this.solution as string).split(" ") : [];
-    for (let i = 0; i < solutionList.length; i++) {
-      solutionList[i] = solutionList[i].split(",");
-    }
-    for (let i = 0; i < this.cardsToShow.length; i++) {
-      if (this.inList(this.cardsToShow[i], solutionList)) {
-        (document.getElementsByTagName(
-          "main-game"
-        )[0].shadowRoot!.children[1].children[
-          i
-        ].children[0] as HTMLInputElement).style.borderColor = "blue";
-      } else {
-        (document.getElementsByTagName(
-          "main-game"
-        )[0].shadowRoot!.children[1].children[
-          i
-        ].children[0] as HTMLInputElement).style.borderColor = "#555";
+    console.log(this.numberOfSymbols);
+    console.log(this.numberOfSymbols < 7);
+    if (this.numberOfSymbols < 7) {
+      let solutionList: any = this.solution
+        ? (this.solution as string).split(" ")
+        : [];
+      for (let i = 0; i < solutionList.length; i++) {
+        solutionList[i] = solutionList[i].split(",");
+      }
+      for (let i = 0; i < this.cardsToShow.length; i++) {
+        if (this.inList(this.cardsToShow[i], solutionList)) {
+          (
+            document.getElementsByTagName("main-game")[0].shadowRoot!
+              .children[1].children[i].children[0] as HTMLInputElement
+          ).style.borderColor = "blue";
+        } else {
+          (
+            document.getElementsByTagName("main-game")[0].shadowRoot!
+              .children[1].children[i].children[0] as HTMLInputElement
+          ).style.borderColor = "#555";
+        }
       }
     }
   }
 
   giveHint() {
-    let solutionList: any = this.solution ? (this.solution as string).split(" ") : [];
-    for (let i = 0; i < solutionList.length; i++) {
-      solutionList[i] = solutionList[i].split(",");
-    }
-    for (let i = 0; i < this.cardsToShow.length; i++) {
-      if (this.cardsToShow[i][0] == solutionList[this.hintsGiven][0]) {
-        (document.getElementsByTagName(
-          "main-game"
-        )[0].shadowRoot!.children[1].children[
-          i
-        ].children[0] as HTMLInputElement).style.borderColor = "blue";
+    if (this.numberOfSymbols < 7) {
+      let solutionList: any = this.solution
+        ? (this.solution as string).split(" ")
+        : [];
+      for (let i = 0; i < solutionList.length; i++) {
+        solutionList[i] = solutionList[i].split(",");
       }
+      for (let i = 0; i < this.cardsToShow.length; i++) {
+        if (this.cardsToShow[i][0] == solutionList[this.hintsGiven][0]) {
+          (
+            document.getElementsByTagName("main-game")[0].shadowRoot!
+              .children[1].children[i].children[0] as HTMLInputElement
+          ).style.borderColor = "blue";
+        }
+      }
+      this.hintsGiven += 1;
     }
-    this.hintsGiven += 1;
   }
 
   render() {
@@ -476,6 +489,29 @@ export class MainGame extends LitElement {
         </button>
       `;
     };
+
+    const solutionButton = () => {
+      if (this.numberOfSymbols > 7) {
+        return html`<button
+          class="button"
+          style="background-color:grey;"
+          @click=${this.showSolution}
+        >
+          SOLUTION
+        </button>`;
+      }
+      return html`<button class="button" @click=${this.showSolution}>
+        SOLUTION
+      </button>`;
+    };
+
+    const hintButton = () => {
+      if (this.numberOfSymbols > 7) {
+        return html`<button class="button" style="background-color:grey;" @click=${this.giveHint}>HINT</button>`;
+      }
+      return html`<button class="button" @click=${this.giveHint}>HINT</button>`;
+    };
+
     return html`<div class="cards_remaining">
         <a>NUMBER CARDS REMAINING: ${this.totalCards}</a>
       </div>
@@ -497,8 +533,8 @@ export class MainGame extends LitElement {
 
       <div class="play_buttons">
         <button class="button" @click=${this.shuffle}>SHUFFLE</button>
-        <button class="button" @click=${this.giveHint}>HINT</button>
-        <button class="button" @click=${this.showSolution}>SOLUTION</button>
+        ${hintButton()}
+        ${solutionButton()}
         <button class="button" @click=${this.startGame}>NEW GAME</button>
       </div>`;
   }
