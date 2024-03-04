@@ -401,7 +401,7 @@ export class MainGame extends LitElement {
     }
 
     if (this.cardsToShow.length != 0) {
-      // this.solution = this.findSolution();
+      this.solution = this.findSolution();
       this.hintsGiven = 0;
     } else {
       (
@@ -432,6 +432,7 @@ export class MainGame extends LitElement {
         solutionList[i] = solutionList[i].split(",");
       }
       for (let i = 0; i < this.cardsToShow.length; i++) {
+        console.log("in a loop")
         if (this.inList(this.cardsToShow[i], solutionList)) {
           (
             document.getElementsByTagName("main-game")[0].shadowRoot!
@@ -495,11 +496,11 @@ export class MainGame extends LitElement {
         return html`<button
           class="button"
           style="background-color:grey;"
-          @click=${this.showSolution}
         >
           SOLUTION
         </button>`;
       }
+      console.log("returning here")
       return html`<button class="button" @click=${this.showSolution}>
         SOLUTION
       </button>`;
